@@ -18,29 +18,35 @@ function Home(props) {
             <h2>Total words: {words.length}</h2>
             <Container>
                 <Row>
-                    <Col sm='6' md='4'>
-                    <Button >Help</Button>
-                    </Col>
-                    <Col sm='6' md='4'>
-                    <Button>Help</Button>
-                    </Col>
-                    <Col sm='6' md='4'>
-                    <Button>Help</Button>
-                    </Col>
 
                     {words.map(x => 
-                        <Col sm='6' md='4'>
+                        <Col sm='6' md='4'
+                        style={{
+                            marginTop:20
+                        }}>
                         <ReactCardFlip isFlipped={flipped === x['word']}
-                        flipDirection='horizontal'>
+                        cardStyles={{"front":{"height" : 150,
+                                    "backgroundColor" : "#91f0ff"},
+                                "back": {"height" : 150,
+                                "backgroundColor" : "#86ffc5"}}}
+                            flipDirection='horizontal'>
                             <div onClick={() => {
                                 setFlipped(x['word']);
-                            }}>
-                                {x['word']}
+                            }}
+                            className="frontcard"
+                            >
+                                <div classname='eachcard'>
+                                <p >{x['word']}</p>
+                                </div>
                             </div>
                             <div onClick={() => {
                                 setFlipped('xyz');
-                            }}>
-                                {x['meaning']}
+                            }}
+                            className="backcard"
+                            >
+                                <div classname='eachcard'>
+                                <p >{x['meaning']}</p>
+                                </div>
                             </div>
                         </ReactCardFlip>
                         </Col>
