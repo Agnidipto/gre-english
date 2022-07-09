@@ -9,13 +9,17 @@ Navbar} from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import ReactCardFlip from "react-card-flip";
 import ExampleModal from "../ExampleModal";
+import shuffleArray from "./ShuffleArray";
+import {useNavigate} from "react-router-dom";
 
-const words = require("../../output.json");
+const input = require("../../output.json");
+const normalized =  require("../../normalized.json");
 
 
 function Home(props) {
 
     const [flipped, setFlipped]=useState('xyz');
+    const [words, setWords] = useState(input);
 
     const [currentItems, setCurrentItems] = useState(words.slice(0,10)); // for items to be shown in the page
     const [pageCount, setPageCount] = useState(0); // to count the total number of pages
@@ -27,14 +31,31 @@ function Home(props) {
     const [modalWord, setModalWord] = useState('xyz');
     const [modalExample, setModalExample] = useState([]);  
 
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         const endOffset= itemOffset + parseInt(itemsPerPage); // last item in the page + 1
         console.log('offset'+itemOffset + 'endoffset' + endOffset);
         setCurrentItems(words.slice(itemOffset, endOffset)); // slicing the array
         setPageCount(Math.ceil(words.length / itemsPerPage)); // setting the Page Count
-    }, [itemsPerPage, itemOffset]);
+    }, [itemsPerPage, itemOffset, words]);
+
+    const randomize = (e) => {
+        e.preventDefault(); 
+        const x =shuffleArray(input)
+        setWords(x);
+        const endOffset= itemOffset + parseInt(itemsPerPage); // last item in the page + 1
+        setCurrentItems(x.slice(itemOffset, endOffset)); // slicing the array
+        setPageCount(Math.ceil(words.length / itemsPerPage));
+    }
+
+    useEffect(() => {
+        if(props.random === true) 
+        setWords(shuffleArray(input))
+        else 
+        setWords(normalized);
+    },[props.random])
+
 
     const handlePageClick = (event) => {
         const newOffset = (event.selected * parseInt(itemsPerPage)) % words.length; // triggers everytime page is clicked on
@@ -59,14 +80,25 @@ function Home(props) {
                 <Container>
                     <Navbar.Brand href="#home">
                 
-            GRE English Flashcards
+            GRE English Flashcards {props.random? " - Random":""}
             </Navbar.Brand>
             </Container>
             </Navbar>
             <h2
             style={{margin:"20px 0"}}>Total words: {words.length}</h2>
             
-            <div style={{margin:'auto', maxWidth:"300px"}}>
+            {!props.random ? <>
+                <Button 
+                className= 'purple'
+                onClick={() => navigate('../random')}>Random</Button>
+            </>:
+            <>
+                <Button className= 'purple' onClick={randomize}>Randomize</Button>{' '}
+                <Button className= 'green' onClick={() => navigate('../')}>Normalize</Button>
+            </>
+            }
+            
+            <div style={{margin:'20px auto auto', maxWidth:"300px"}}>
             <Form>
                 <Form.Label>No. of words per page</Form.Label>
             <Form.Select aria-label="Default select example"
